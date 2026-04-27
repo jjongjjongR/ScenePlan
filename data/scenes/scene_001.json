@@ -1,0 +1,66 @@
+{
+    "scene_id": "scene_001",
+    "description": "A simple tabletop scene with a closed drawer and a red cup inside it.",
+    "places": [
+        {
+            "place_id": "table_1",
+            "type": "table",
+            "name": "table",
+            "state": "clear",
+            "visible": true,
+            "reachable": true
+        },
+        {
+            "place_id": "drawer_1",
+            "type": "drawer",
+            "name": "drawer",
+            "state": "closed",
+            "visible": true,
+            "reachable": true
+        }
+    ],
+    "objects": [
+        {
+            "object_id": "cup_red_1",
+            "category": "cup",
+            "name": "red cup",
+            "color": "red",
+            "location": "inside:drawer_1",
+            "visible": false,
+            "reachable": false,
+            "graspable": true
+        },
+        {
+            "object_id": "cup_blue_1",
+            "category": "cup",
+            "name": "blue cup",
+            "color": "blue",
+            "location": "on:table_1",
+            "visible": true,
+            "reachable": true,
+            "graspable": true
+        }
+    ],
+    "relations": [
+        {
+            "subject": "cup_red_1",
+            "relation": "inside",
+            "object": "drawer_1"
+        },
+        {
+            "subject": "cup_blue_1",
+            "relation": "on",
+            "object": "table_1"
+        },
+        {
+            "subject": "drawer_1",
+            "relation": "near",
+            "object": "table_1"
+        }
+    ],
+    "robot_state": {
+        "holding": null,
+        "gripper_state": "open",
+        "current_location": "table_area"
+    }
+}

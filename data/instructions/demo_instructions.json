@@ -1,0 +1,11 @@
+{
+    "instructions": [
+        {
+            "instruction_id": "inst_001",
+            "text": "서랍 안에 있는 빨간 컵을 테이블 위에 올려줘.",
+            "expected_intent": "retrieve_and_place",
+            "expected_target": "cup_red_1",
+            "expected_destination": "table_1"
+        }
+    ]
+}
