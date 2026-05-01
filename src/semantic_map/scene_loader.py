@@ -1,8 +1,9 @@
 # src/semantic_map/scene_loader.py
 
-# 2026-04-29 신규: scene JSON 파일을 SemanticScene dataclass 객체로 변환합니다.
-from typing import Any, Dict, List
+# 2026-05-02 수정: scene JSON의 symbolic field와 MVP용 3D field를 함께 읽도록 확장했습니다.
+from typing import Any, Dict, List, Optional
 
+from src.schemas.geometry_schema import BasePoseCandidate, Box3D, Pose3D
 from src.schemas.scene_schema import (
     Place,
     Relation,
@@ -35,6 +36,9 @@ def load_scene(path: str) -> SemanticScene:
     objects = _parse_objects(data.get("objects", []))
     relations = _parse_relations(data.get("relations", []))
     robot_state = _parse_robot_state(data.get("robot_state", {}))
+    base_pose_candidates = _parse_base_pose_candidates(
+        data.get("base_pose_candidates", [])
+    )
 
     return SemanticScene(
         scene_id=data["scene_id"],
@@ -43,6 +47,7 @@ def load_scene(path: str) -> SemanticScene:
         objects=objects,
         relations=relations,
         robot_state=robot_state,
+        base_pose_candidates=base_pose_candidates,
     )
 
 
@@ -79,6 +84,10 @@ def _parse_places(place_items: List[Dict[str, Any]]) -> List[Place]:
             state=item.get("state"),
             visible=item["visible"],
             reachable=item["reachable"],
+            pose=_parse_pose_3d(item.get("pose")),
+            bbox_3d=_parse_bbox_3d(item.get("bbox_3d")),
+            handle_pose=_parse_pose_3d(item.get("handle_pose")),
+            place_pose=_parse_pose_3d(item.get("place_pose")),
         )
         places.append(place)
 
@@ -102,6 +111,10 @@ def _parse_objects(object_items: List[Dict[str, Any]]) -> List[SceneObject]:
             visible=item["visible"],
             reachable=item["reachable"],
             graspable=item["graspable"],
+            known_from=item.get("known_from"),
+            pose=_parse_pose_3d(item.get("pose")),
+            bbox_3d=_parse_bbox_3d(item.get("bbox_3d")),
+            grasp_pose=_parse_pose_3d(item.get("grasp_pose")),
         )
         objects.append(scene_object)
 
@@ -135,4 +148,75 @@ def _parse_robot_state(item: Dict[str, Any]) -> RobotState:
         holding=item.get("holding"),
         gripper_state=item["gripper_state"],
         current_location=item["current_location"],
+        base_pose=item.get("base_pose"),
+        current_base_pose_id=item.get("current_base_pose_id"),
+        arm_reach_radius=item.get("arm_reach_radius"),
+        min_clearance=item.get("min_clearance"),
+    )
+
+
+def _parse_base_pose_candidates(
+    candidate_items: List[Dict[str, Any]]
+) -> List[BasePoseCandidate]:
+    """
+    JSON의 base_pose_candidates 배열을 BasePoseCandidate 객체 리스트로 변환합니다.
+    """
+
+    candidates = []
+
+    for item in candidate_items:
+        candidate = BasePoseCandidate(
+            base_pose_id=item["base_pose_id"],
+            pose=item["pose"],
+            description=item.get("description"),
+        )
+        candidates.append(candidate)
+
+    return candidates
+
+
+def _parse_pose_3d(item: Optional[Dict[str, Any]]) -> Optional[Pose3D]:
+    """
+    JSON의 pose 객체를 Pose3D로 변환합니다.
+    """
+
+    if item is None:
+        return None
+
+    position = item.get("position")
+    orientation = item.get("orientation")
+
+    if not isinstance(position, list) or len(position) != 3:
+        raise ValueError("Pose3D position must be a list of 3 floats.")
+
+    if not isinstance(orientation, list) or len(orientation) != 4:
+        raise ValueError("Pose3D orientation must be a list of 4 floats.")
+
+    return Pose3D(
+        position=position,
+        orientation=orientation,
+    )
+
+
+def _parse_bbox_3d(item: Optional[List[float]]) -> Optional[Box3D]:
+    """
+    JSON의 bbox_3d 배열을 Box3D로 변환합니다.
+
+    bbox_3d 순서:
+    [center_x, center_y, center_z, size_x, size_y, size_z]
+    """
+
+    if item is None:
+        return None
+
+    if not isinstance(item, list) or len(item) != 6:
+        raise ValueError("bbox_3d must be a list of 6 floats.")
+
+    return Box3D(
+        center_x=item[0],
+        center_y=item[1],
+        center_z=item[2],
+        size_x=item[3],
+        size_y=item[4],
+        size_z=item[5],
     )

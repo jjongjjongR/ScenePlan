@@ -1,8 +1,10 @@
 # src/schemas/scene_schema.py
 
-# 2026-04-29 신규: scene JSON 데이터를 Python 객체로 표현하기 위한 dataclass 모음입니다.
-from dataclasses import dataclass
+# 2026-05-02 수정: 기존 symbolic scene schema에 MVP용 3D scene field를 추가했습니다.
+from dataclasses import dataclass, field
 from typing import List, Optional
+
+from src.schemas.geometry_schema import BasePoseCandidate, Box3D, Pose3D
 
 
 @dataclass
@@ -15,6 +17,12 @@ class Place:
     state: Optional[str]
     visible: bool
     reachable: bool
+
+    # 2026-05-02 신규: 3D 위치, 크기, handle/place waypoint 정보를 저장합니다.
+    pose: Optional[Pose3D] = None
+    bbox_3d: Optional[Box3D] = None
+    handle_pose: Optional[Pose3D] = None
+    place_pose: Optional[Pose3D] = None
 
 
 @dataclass
@@ -29,6 +37,12 @@ class SceneObject:
     visible: bool
     reachable: bool
     graspable: bool
+
+    # 2026-05-02 신규: hidden object 정보 출처와 3D grasp 정보를 저장합니다.
+    known_from: Optional[str] = None
+    pose: Optional[Pose3D] = None
+    bbox_3d: Optional[Box3D] = None
+    grasp_pose: Optional[Pose3D] = None
 
 
 @dataclass
@@ -48,6 +62,12 @@ class RobotState:
     gripper_state: str
     current_location: str
 
+    # 2026-05-02 신규: simplified geometric feasibility 검증에 필요한 로봇 상태입니다.
+    base_pose: Optional[List[float]] = None
+    current_base_pose_id: Optional[str] = None
+    arm_reach_radius: Optional[float] = None
+    min_clearance: Optional[float] = None
+
 
 @dataclass
 class SemanticScene:
@@ -59,3 +79,6 @@ class SemanticScene:
     objects: List[SceneObject]
     relations: List[Relation]
     robot_state: RobotState
+
+    # 2026-05-02 신규: local repair에서 사용할 base pose 후보 목록입니다.
+    base_pose_candidates: List[BasePoseCandidate] = field(default_factory=list)
