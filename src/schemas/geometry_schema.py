@@ -7,7 +7,15 @@ from typing import List, Optional
 
 @dataclass
 class Pose3D:
-    """3D 위치와 방향을 표현합니다."""
+    """
+    3D 위치와 방향을 표현합니다.
+
+    position:
+        [x, y, z]
+
+    orientation:
+        quaternion 형식 [x, y, z, w]
+    """
 
     position: List[float]
     orientation: List[float]
@@ -15,7 +23,12 @@ class Pose3D:
 
 @dataclass
 class Box3D:
-    """3D bounding box를 표현합니다."""
+    """
+    3D bounding box를 표현합니다.
+
+    bbox_3d 배열 순서:
+        [center_x, center_y, center_z, size_x, size_y, size_z]
+    """
 
     center_x: float
     center_y: float
@@ -27,7 +40,12 @@ class Box3D:
 
 @dataclass
 class BasePoseCandidate:
-    """로봇 base pose 후보를 표현합니다."""
+    """
+    로봇 base pose 후보를 표현합니다.
+
+    pose:
+        [x, y, theta]
+    """
 
     base_pose_id: str
     pose: List[float]

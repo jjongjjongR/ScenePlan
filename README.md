@@ -97,18 +97,18 @@ Human Instruction
 | Phase 3 | Scene Understanding | scene JSON 로드 및 object / relation 탐색 | scene_loader, object_finder, relation_finder | 완료 |
 | Phase 4 | Instruction Parsing | 한국어 명령을 ParsedInstruction으로 변환 | rule_parser | 완료 |
 | Phase 5 | Raw Task Planning | ParsedInstruction과 scene으로 raw task plan 생성 | rule_task_planner | 완료 |
-| Phase 6 | 3D Scene Extension | scene JSON에 pose, bbox, grasp pose, base pose 추가 | geometry field 포함 scene JSON | 진행 예정 |
-| Phase 7 | MVP Geometry / Skill Path Schema | waypoint와 skill path 표현 추가 | geometry_schema, skill_path_schema | 진행 예정 |
-| Phase 8 | Skill Path Candidate | raw/corrected task plan을 waypoint 후보로 변환 | skill_path_generator | 진행 예정 |
-| Phase 9 | MVP Feasibility Verification | symbolic issue와 reachability failure 검출 | simple verifier, reachability_checker | 진행 예정 |
-| Phase 10 | Local Repair Suggestion | OPEN step과 base pose 수정 후보 제안 | base_pose_repair, suggested_fix | 진행 예정 |
+| Phase 6 | 3D Scene Extension | scene JSON에 pose, bbox, grasp pose, base pose 추가 | geometry field 포함 scene JSON | 완료 |
+| Phase 7 | MVP Geometry / Skill Path Schema | waypoint와 skill path 표현 추가 | geometry_schema, skill_path_schema | 완료 |
+| Phase 8 | Skill Path Candidate | raw/corrected task plan을 waypoint 후보로 변환 | skill_path_generator | 완료 |
+| Phase 9 | MVP Feasibility Verification | symbolic issue와 reachability failure 검출 | simple verifier, reachability_checker | 완료 |
+| Phase 10 | Local Repair Suggestion | OPEN step과 base pose 수정 후보 제안 | base_pose_repair, suggested_fix | 완료 |
 | Phase 11 | Integrated Demo | 전체 MVP 흐름 실행 | `scripts/run_demo.py` | 진행 예정 |
 
 ---
 
 ## 현재 구현 상태
 
-현재 구현은 **입력 처리와 Raw Task Planning 단계**까지 완료된 상태입니다.
+현재 구현은 **Phase 10: Local Repair Suggestion 단계**까지 완료된 상태입니다.
 
 완료된 기능:
 
@@ -119,6 +119,10 @@ Human Instruction
 - object / relation finder 구현
 - rule-based instruction parser 구현
 - raw task planner 구현
+- 3D Scene 필드 확장 및 Geometry/Skill Path Schema 추가
+- Task Plan을 Skill Path Candidate로 변환하는 generator 구현
+- Symbolic (missing precondition) 및 Reachability 검증기 구현
+- 검증 실패 시 OPEN step 삽입 및 base pose 대안을 탐색하는 Local Repair 로직 구현
 
 현재 raw plan 예시:
 
