@@ -1,6 +1,84 @@
-# ScenePlan
+# Budget-aware Sim2Skill (formerly ScenePlan)
+
+> 🚀 **Project Transition:** 이 프로젝트는 초기의 단순 JSON/규칙 기반 검증기(ScenePlan MVP)에서 발전하여, 제한된 로컬 GPU(RTX 3070 등) 환경을 타겟으로 한 **시뮬레이션 기반 로봇 모방학습(Robot Learning) 검증 파이프라인**으로 완전히 전환되었습니다.
+
+## 1. 프로젝트 한 줄 정의
+
+제한된 환경에서 시뮬레이터(`robosuite`, `MuJoCo`)를 띄워 작은 단위의 Pick & Place 태스크를 세팅하고, 전문가의 조작(Scripted Policy)을 시연 데이터(Demonstrations)로 수집한 뒤, 이를 Behavior Cloning(BC) 방식으로 지도학습하여 로봇의 성공률과 정책 평가 과정을 자동화하는 **Physical AI 실험 기반 프로젝트**입니다.
+
+---
+
+## 2. 핵심 목표 (Robot Learning for Manipulation)
+
+과거 로드맵에서는 "의미적으로 맞으나 기하학적으로 불가능한 경로"를 규칙으로 필터링하는 데 그쳤습니다. 
+새로운 고도화 버전에서는 **실제 물리엔진 상의 관측값(Observation)**과 **직접적인 로봇 조작 제어(Action)**를 통해 다음과 같은 전체 머신러닝 학습 사이클을 구현합니다.
+
+```text
+Simulation Environment (robosuite)
+→ Scripted Policy (Expert)
+→ Demonstration Collection (.hdf5)
+→ Behavior Cloning (PyTorch MLP)
+→ Policy Evaluation (Sim2Skill)
+```
+
+---
+
+## 3. 핵심 기술 스택
+
+- **시뮬레이터:** `robosuite` (with `MuJoCo` Engine), `Franka Emika Panda` 로봇 모델
+- **인공지능/머신러닝:** `PyTorch`
+- **데이터 처리:** `h5py`, `numpy`
+
+---
+
+## 4. 파이프라인 및 실행 가이드
+
+모든 스크립트는 `scripts/` 폴더 내에 순차적으로 구성되어 있습니다. 프로젝트 루트 경로에서 아래 스크립트들을 차례로 실행하면 전체 로봇 학습 과정을 직접 경험할 수 있습니다.
+
+### 4.1. 환경 테스트 (선택 사항)
+로봇 시뮬레이션 창이 정상적으로 뜨는지, 초기 무작위 행동이 실행되는지 확인합니다.
+```bash
+python3 scripts/test_env.py
+```
+
+### 4.2. 데모 데이터 수집 (Data Collection)
+`ScriptedPickPlacePolicy`가 시뮬레이션 환경 내에서 직접 로봇을 구동하여 대상 물체에 접근하고 집어 올리는 과정을 수행합니다. 이때의 State와 Action 값 500 스텝 분량이 `data/datasets/demo_dataset.hdf5`로 저장됩니다.
+```bash
+python3 scripts/collect_demonstrations.py
+```
+
+### 4.3. 행동 복제 학습 (Behavior Cloning)
+수집된 `.hdf5` 파일을 PyTorch Dataset으로 로드하여, State를 보고 최적의 Action을 반환하도록 다층 퍼셉트론(MLP) 기반 모델을 학습합니다. 
+```bash
+python3 scripts/train_bc.py
+```
+> 학습이 완료되면 모델 가중치가 `data/models/bc_model.pt` 경로에 저장됩니다.
+
+### 4.4. 학습된 모델 평가 (Policy Evaluation)
+하드코딩 규칙을 완전히 제외하고, 오직 앞서 학습된 **인공신경망의 예측값**만으로 로봇을 제어하여 Pick & Place 환경에서의 성공률을 시각적으로 평가합니다.
+```bash
+python3 scripts/evaluate_policy.py
+```
+
+---
+
+## 5. 향후 연구 방향성 (Future Works)
+
+현재 파이프라인은 로봇 조작 학습의 가장 기초적인 "State-based Behavior Cloning"을 다루고 있습니다.
+여기서 얻은 파이프라인을 바탕으로, 추후 다음과 같은 확장 실험을 진행할 예정입니다.
+
+1. **Vision-based Policy (이미지 관측):** 1차원 숫자 배열(State) 대신 RGB-D 카메라 이미지를 입력으로 받는 Convolutional/ResNet 모델 기반 정책 학습
+2. **Diffusion Policy / Reinforcement Learning:** 단순 모방을 넘어, 노이즈를 제거하는 디퓨전 방식이나 보상을 극대화하는 강화학습(PPO, SAC 등) 도입
+3. **Isaac Sim / Isaac Lab 연동:** robosuite에서 충분한 검증 후, 보다 무겁지만 현실적인 NVIDIA Isaac 환경으로 확장 이식
+4. **Failure Analysis:** 평가 스크립트 고도화를 통한 충돌(Collision), 목표 미달(Reachability Failure) 등 실패 유형 분류 및 로깅
+
+---
+---
+
+# [참고] 이전 버전: ScenePlan MVP (Phase 11 완결)
 
 > MVP: Language-guided task planning with simplified 3D skill-path feasibility checking
+> 과거 작성되었던 JSON 파서 및 룰 기반 Reachability/Symbolic 수정 기능의 기록입니다.
 
 ## 프로젝트 정의
 
