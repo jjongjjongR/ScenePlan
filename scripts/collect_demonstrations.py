@@ -13,7 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.sim.env_setup import create_env
 from src.skills.scripted_policy import ScriptedPickPlacePolicy
 
-def collect_data(num_episodes=10, max_steps=50):
+def collect_data(num_episodes=200, max_steps=300):
     env = create_env(has_renderer=False, has_offscreen_renderer=False)
     
     os.makedirs("data/datasets", exist_ok=True)
