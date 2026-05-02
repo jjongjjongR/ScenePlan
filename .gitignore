@@ -26,3 +26,8 @@ htmlcov/
 
 # Logs
 *.log
+
+# Data & Models
+data/
+*.hdf5
+*.pt
