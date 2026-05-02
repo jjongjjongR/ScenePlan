@@ -2,6 +2,14 @@
 
 > 🚀 **Project Transition:** 이 프로젝트는 초기의 단순 JSON/규칙 기반 검증기(ScenePlan MVP)에서 발전하여, 제한된 로컬 GPU(RTX 3070 등) 환경을 타겟으로 한 **시뮬레이션 기반 로봇 모방학습(Robot Learning) 검증 파이프라인**으로 완전히 전환되었습니다.
 
+## 🛠️ Tech Stack
+
+- **Physics Engine:** `MuJoCo` (고성능 로봇 물리 시뮬레이션 엔진)
+- **Robot Framework:** `robosuite` (로봇 학습을 위한 표준화된 벤치마크 환경)
+- **Deep Learning:** `PyTorch` (Behavior Cloning 신경망 모델 구현)
+- **Data Management:** `h5py`, `NumPy` (대용량 시연 데이터셋 관리 및 수치 계산)
+- **Language:** `Python 3.x`
+
 ## 1. 프로젝트 한 줄 정의
 
 제한된 환경에서 시뮬레이터(`robosuite`, `MuJoCo`)를 띄워 작은 단위의 Pick & Place 태스크를 세팅하고, 전문가의 조작(Scripted Policy)을 시연 데이터(Demonstrations)로 수집한 뒤, 이를 Behavior Cloning(BC) 방식으로 지도학습하여 로봇의 성공률과 정책 평가 과정을 자동화하는 **Physical AI 실험 기반 프로젝트**입니다.
@@ -23,13 +31,6 @@ Simulation Environment (robosuite)
 
 ---
 
-## 3. 핵심 기술 스택
-
-- **시뮬레이터:** `robosuite` (with `MuJoCo` Engine), `Franka Emika Panda` 로봇 모델
-- **인공지능/머신러닝:** `PyTorch`
-- **데이터 처리:** `h5py`, `numpy`
-
----
 
 ## 4. 파이프라인 및 실행 가이드
 
