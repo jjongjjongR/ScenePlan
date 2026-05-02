@@ -34,7 +34,7 @@ def train():
     print(f"Starting BC training. Input dim: {input_dim}, Output dim: {output_dim}")
     print(f"Total dataset size: {len(dataset)} steps")
     
-    num_epochs = 20
+    num_epochs = 100
     for epoch in range(num_epochs):
         total_loss = 0
         for states, actions in dataloader:
